@@ -45,7 +45,7 @@
       align-items: center;
       transition: background-color 0.3s;
       cursor: pointer;
-      touch-action: manipulation; /* viktig for iPhone */
+      touch-action: manipulation;
     }
     button span.number {
       font-weight: bold;
@@ -59,16 +59,25 @@
       cursor: default;
     }
 
-    /* 📱 Mobilvisning */
     @media (max-width: 700px) {
       #athletes {
-        justify-content: flex-start; /* 🔹 start helt fra venstre */
-        gap: 6px;                    /* 🔹 tett mellom knappene */
+        justify-content: flex-start; /* start helt fra venstre */
+        gap: 6px;
       }
       button {
         flex: 1 1 calc(33.333% - 6px);
         max-width: 33%;
       }
+    }
+
+    #downloadLink {
+      display: none;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -78,6 +87,7 @@
   <div id="countdown">20</div>
   <button id="startBtn">Start</button>
   <div id="athletes"></div>
+  <a id="downloadLink" download="resultater.csv">Last ned resultater</a>
 
   <script>
     let mainTime = 0;
@@ -87,11 +97,13 @@
     let currentNumber = 51;
     const maxNumber = 76;
     let audioCtx = null;
+    let results = []; // 🔹 lagrer alle resultater
 
     const mainTimerEl = document.getElementById("mainTimer");
     const countdownEl = document.getElementById("countdown");
     const athletesEl = document.getElementById("athletes");
     const startBtn = document.getElementById("startBtn");
+    const downloadLink = document.getElementById("downloadLink");
 
     function beep(duration = 150, frequency = 1000, volume = 1, type = "sine") {
       if (!audioCtx) return;
@@ -119,11 +131,15 @@
       }, 1000);
     }
 
+    function stopMainTimer() {
+      clearInterval(mainTimerInterval);
+    }
+
     function playCountdownBeeps(timeLeft) {
       if (timeLeft === 4 || timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
-        beep(100, 1000, 1, "square"); // kort og skarp
+        beep(100, 1000, 1, "square"); // kort pip
       } else if (timeLeft === 0) {
-        beep(700, 1500, 1, "square"); // lang, skarp og merkbar
+        beep(700, 1500, 1, "square"); // langt pip
       }
     }
 
@@ -134,6 +150,7 @@
       numberSpan.textContent = number;
       const timeSpan = document.createElement("span");
       timeSpan.textContent = "00:00";
+
       btn.appendChild(numberSpan);
       btn.appendChild(timeSpan);
 
@@ -150,9 +167,31 @@
         clearInterval(updateInterval);
         const endTime = mainTime - startTime;
         timeSpan.textContent = formatTime(endTime);
+
+        // 🔹 lagre resultatet
+        results.push({ nummer: number, tid: formatTime(endTime) });
+
+        // 🔹 hvis alle 26 er ferdige → stopp tid og last ned fil
+        if (results.length === (maxNumber - 50)) {
+          stopMainTimer();
+          generateDownloadFile();
+        }
       });
 
       athletesEl.appendChild(btn);
+    }
+
+    function generateDownloadFile() {
+    let csvContent = "Start nummer;Tid\n";
+    results.forEach(r => {
+    csvContent += `${r.nummer};${r.tid}\n`;
+    });
+
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+
+      downloadLink.href = url;
+      downloadLink.style.display = "inline-block";
     }
 
     function startCountdown() {
@@ -181,6 +220,7 @@
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         audioCtx.resume();
       }
+
       startBtn.disabled = true;
       startMainTimer();
       addAthleteButton(currentNumber);

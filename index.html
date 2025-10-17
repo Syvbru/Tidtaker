@@ -58,12 +58,15 @@
       background-color: #28a745 !important;
       cursor: default;
     }
+
+    /* 📱 Mobilvisning */
     @media (max-width: 700px) {
       #athletes {
-        justify-content: space-between;
+        justify-content: center;  /* 🔹 sentrer i stedet for space-between */
+        gap: 6px;                 /* 🔹 litt jevnt mellomrom */
       }
       button {
-        flex: 1 1 calc(33.333% - 10px);
+        flex: 1 1 calc(33.333% - 6px);
         max-width: 33%;
       }
     }
@@ -90,6 +93,19 @@
     const athletesEl = document.getElementById("athletes");
     const startBtn = document.getElementById("startBtn");
 
+    function beep(duration = 150, frequency = 1000, volume = 1, type = "sine") {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = type;
+      osc.frequency.value = frequency;
+      gain.gain.value = volume;
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration / 1000);
+    }
+
     function formatTime(sec) {
       const m = Math.floor(sec / 60).toString().padStart(2, "0");
       const s = (sec % 60).toString().padStart(2, "0");
@@ -103,23 +119,11 @@
       }, 1000);
     }
 
-    function beep(duration = 150, frequency = 1000, volume = 1) {
-      if (!audioCtx) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.frequency.value = frequency;
-      gain.gain.value = volume;
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration / 1000);
-    }
-
     function playCountdownBeeps(timeLeft) {
-      if (timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
-        beep(100, 1000);
+      if (timeLeft === 4 || timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
+        beep(100, 1000, 1, "square"); // kort og skarp
       } else if (timeLeft === 0) {
-        beep(500, 600);
+        beep(700, 1500, 1, "square"); // lang, skarp og merkbar
       }
     }
 
@@ -128,10 +132,8 @@
       const numberSpan = document.createElement("span");
       numberSpan.classList.add("number");
       numberSpan.textContent = number;
-
       const timeSpan = document.createElement("span");
       timeSpan.textContent = "00:00";
-
       btn.appendChild(numberSpan);
       btn.appendChild(timeSpan);
 
@@ -174,22 +176,14 @@
       }, 1000);
     }
 
-    // ✅ iPhone-sikker Start-knapp
     startBtn.addEventListener("click", () => {
-      // Opprett lydmotor i direkte brukerinteraksjon
       if (!audioCtx) {
-        try {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          audioCtx.resume(); // Kall synkront her
-        } catch (e) {
-          console.log("AudioContext-feil:", e);
-        }
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioCtx.resume();
       }
-
-      // Start alt
       startBtn.disabled = true;
       startMainTimer();
-      addAthleteButton(currentNumber); // Første deltaker starter umiddelbart
+      addAthleteButton(currentNumber);
       startCountdown();
     });
   </script>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tidtaker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 30px;
+      background-color: #f4f4f4;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    #mainTimer {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    #countdown {
+      font-size: 3em;
+      margin: 20px 0;
+    }
+    #athletes {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+      padding: 0 10px;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      background-color: #007bff;
+      color: white;
+      padding: 15px 10px;
+      font-size: 1.2em;
+      width: 150px;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s;
+      cursor: pointer;
+      touch-action: manipulation; /* viktig for iPhone */
+    }
+    button span.number {
+      font-weight: bold;
+      font-size: 1.5em;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button:disabled {
+      background-color: #28a745 !important;
+      cursor: default;
+    }
+    @media (max-width: 700px) {
+      #athletes {
+        justify-content: space-between;
+      }
+      button {
+        flex: 1 1 calc(33.333% - 10px);
+        max-width: 33%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Tidtaker</h1>
+  <div id="mainTimer">00:00</div>
+  <div id="countdown">20</div>
+  <button id="startBtn">Start</button>
+  <div id="athletes"></div>
+
+  <script>
+    let mainTime = 0;
+    let mainTimerInterval;
+    let countdown = 20;
+    let countdownInterval;
+    let currentNumber = 51;
+    const maxNumber = 76;
+    let audioCtx = null;
+
+    const mainTimerEl = document.getElementById("mainTimer");
+    const countdownEl = document.getElementById("countdown");
+    const athletesEl = document.getElementById("athletes");
+    const startBtn = document.getElementById("startBtn");
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, "0");
+      const s = (sec % 60).toString().padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function startMainTimer() {
+      mainTimerInterval = setInterval(() => {
+        mainTime++;
+        mainTimerEl.textContent = formatTime(mainTime);
+      }, 1000);
+    }
+
+    function beep(duration = 150, frequency = 1000, volume = 1) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.value = frequency;
+      gain.gain.value = volume;
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration / 1000);
+    }
+
+    function playCountdownBeeps(timeLeft) {
+      if (timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
+        beep(100, 1000);
+      } else if (timeLeft === 0) {
+        beep(500, 600);
+      }
+    }
+
+    function addAthleteButton(number) {
+      const btn = document.createElement("button");
+      const numberSpan = document.createElement("span");
+      numberSpan.classList.add("number");
+      numberSpan.textContent = number;
+
+      const timeSpan = document.createElement("span");
+      timeSpan.textContent = "00:00";
+
+      btn.appendChild(numberSpan);
+      btn.appendChild(timeSpan);
+
+      const startTime = mainTime;
+      const updateInterval = setInterval(() => {
+        if (!btn.disabled) {
+          const timeNow = mainTime - startTime;
+          timeSpan.textContent = formatTime(timeNow);
+        }
+      }, 500);
+
+      btn.addEventListener("click", () => {
+        btn.disabled = true;
+        clearInterval(updateInterval);
+        const endTime = mainTime - startTime;
+        timeSpan.textContent = formatTime(endTime);
+      });
+
+      athletesEl.appendChild(btn);
+    }
+
+    function startCountdown() {
+      countdown = 20;
+      countdownEl.textContent = countdown;
+      countdownInterval = setInterval(() => {
+        countdown--;
+        countdownEl.textContent = countdown;
+        playCountdownBeeps(countdown);
+
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+          currentNumber++;
+          if (currentNumber <= maxNumber) {
+            addAthleteButton(currentNumber);
+            startCountdown();
+          } else {
+            countdownEl.textContent = "Ferdig!";
+          }
+        }
+      }, 1000);
+    }
+
+    // ✅ iPhone-sikker Start-knapp
+    startBtn.addEventListener("click", () => {
+      // Opprett lydmotor i direkte brukerinteraksjon
+      if (!audioCtx) {
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          audioCtx.resume(); // Kall synkront her
+        } catch (e) {
+          console.log("AudioContext-feil:", e);
+        }
+      }
+
+      // Start alt
+      startBtn.disabled = true;
+      startMainTimer();
+      addAthleteButton(currentNumber); // Første deltaker starter umiddelbart
+      startCountdown();
+    });
+  </script>
+</body>
+</html>

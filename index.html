@@ -188,15 +188,15 @@
       padding: 20px 15px;
     }
 
-    #athletes button {
-      flex: 1 1 calc(33.333% - 6px);
-      max-width: 33.333%;
-      width: auto;
-    }
-    #athletes {
-        padding: 0 4px;
-        gap: 8px;
-    }
+  #athletes {
+    padding: 0 4px;   /* litt mindre sidepadding */
+    gap: 8px;         /* litt mindre mellomrom */
+  }
+  #athletes button {
+    flex: 0 1 calc((100% - 16px) / 3); /* 16px = 2 gaps à 8px */
+    max-width: calc((100% - 16px) / 3);
+    padding: 12px 8px; /* bittelitt mindre padding for å sikre passform */
+  }
 
     #startBtn {
       width: 95%;

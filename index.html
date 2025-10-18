@@ -292,8 +292,8 @@
   }
 
   function playCountdownBeeps(timeLeft) {
-    if ([5, 4, 3, 2].includes(timeLeft)) beep(100, 1000, 1, "square");
-    else if (timeLeft === 1) beep(700, 1500, 1, "square");
+    if ([4, 3, 2, 1].includes(timeLeft)) beep(100, 1000, 1, "square");
+    else if (timeLeft === 0) beep(700, 1500, 1, "square");
   }
 
   function addAthleteButton(athlete) {

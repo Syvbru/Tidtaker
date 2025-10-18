@@ -4,249 +4,455 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tidtaker</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 30px;
-      margin-bottom: 140px; /* 🔹 ekstra luft nederst for mobil */
-      background-color: #f4f4f4;
-      -webkit-user-select: none;
-      user-select: none;
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 30px 0 140px 0;
+    background-color: #f4f4f4;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* --- SETUP --- */
+  #setup {
+    margin: 0 auto 30px auto;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    max-width: 500px;
+  }
+
+  .formInputs {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  label {
+    font-size: 1.1em;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 6px;
+    color: #333;
+  }
+
+    input[type="file"],
+    input[type="number"] {
+    width: 90%;
+    max-width: 220px; /* 🔹 litt smalere */
+    padding: 9px;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: 0.2s;
+    margin: 3px 6px; /* 🔹 litt luft mellom feltene */
     }
-    #mainTimer {
-      font-size: 2em;
-      font-weight: bold;
-      margin-bottom: 10px;
+
+  input[type="file"] {
+    background-color: #f9f9f9;
+  }
+
+  input[type="number"]:focus,
+  input[type="file"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0,123,255,0.4);
+  }
+
+  #loadBtn {
+    border: none;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: white;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+    max-width: 250px;
+  }
+
+  #loadBtn:hover {
+    background-color: #0056b3;
+  }
+
+  /* --- TIMER / KNAPPER --- */
+  #mainTimer {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  #countdown {
+    font-size: 3em;
+    margin: 20px 0;
+  }
+
+  #nextUp {
+    font-size: 1.3em;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  #athletes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 0 10px;
+  }
+
+  button {
+    border: none;
+    border-radius: 10px;
+    background-color: #007bff;
+    color: white;
+    padding: 15px 10px;
+    font-size: 1.2em;
+    width: calc(20% - 10px); /* 5 per rad på store skjermer */
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  button:disabled {
+    background-color: #28a745 !important;
+    cursor: default;
+  }
+
+  /* --- STARTKNAPP --- */
+  #startBtn {
+    display: block;
+    margin: 0 auto;
+    width: calc(20% * 5 + 40px); /* Samme bredde som 5 knapper + mellomrom */
+    max-width: 800px;
+    height: 70px;
+    font-size: 1.4em;
+    font-weight: bold;
+    border-radius: 12px;
+    background-color: #ff9800;
+  }
+
+  #startBtn:hover {
+    background-color: #e68900;
+  }
+
+  /* --- LAST NED-LENKE --- */
+  #downloadLink {
+    display: none;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+  }
+
+  .bold {
+    font-weight: bolder;
+  }
+
+    #startFrom {
+        margin-bottom: 10px;
     }
-    #countdown {
-      font-size: 3em;
-      margin: 20px 0;
+
+  /* --- MOBIL --- */
+  @media (max-width: 700px) {
+    #setup {
+      width: 100%;
+      max-width: none;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 20px 15px;
     }
-    #nextUp {
-      font-size: 1.3em;
-      font-weight: 500;
-      margin-bottom: 20px;
+
+    #athletes button {
+      flex: 1 1 calc(33.333% - 6px);
+      max-width: 33.333%;
+      width: auto;
     }
-    #athletes {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-      padding: 0 10px;
+
+    #startBtn {
+      width: 100%;
+      max-width: none;
+      border-radius: 0;
     }
-    button {
-      border: none;
-      border-radius: 10px;
-      background-color: #007bff;
-      color: white;
-      padding: 15px 10px;
-      font-size: 1.2em;
-      width: 150px;
-      height: 80px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      transition: background-color 0.3s;
-      cursor: pointer;
-      touch-action: manipulation;
-    }
-    button span.number {
-      font-weight: bold;
-      font-size: 1.5em;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    button:disabled {
-      background-color: #28a745 !important;
-      cursor: default;
-    }
-    @media (max-width: 700px) {
-      #athletes {
-        justify-content: flex-start;
-        gap: 6px;
-      }
-      button {
-        flex: 1 1 calc(33.333% - 6px);
-        max-width: 33%;
-      }
-    }
-    #downloadLink {
-      display: none;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #28a745;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-    }
-    .bold{
-        font-weight: bolder;
-    }
-  </style>
+  }
+</style>
+
 </head>
 <body>
   <h1>Tidtaker</h1>
+
+  <div id="setup">
+    <div class="formInputs">
+      <label>Importer startliste (CSV):</label>
+    </br>
+      <input type="file" id="csvFile" accept=".csv">
+    </div>
+    <div class="formInputs">
+      <label>Manuelt:</label>
+    </br>
+      <input type="number" id="startFrom" placeholder="Første nr">
+      <input type="number" id="endAt" placeholder="Siste nr">
+    </div>
+    <div class="formInputs">
+      <label>Startintervall (sek):</label>
+    </br>
+      <input type="number" id="interval" value="20" min="5" max="300">
+    </div>
+    <button id="loadBtn">Last inn løpere</button>
+  </div>
+
   <div id="mainTimer">00:00</div>
-  <div id="countdown">20</div>
-  <div id="nextUp">Neste ut: <span class="bold"> 51 </span> </div>
-  <button id="startBtn">Start</button>
+  <div id="countdown">20 sek</div>
+  <div id="nextUp"></div>
+  <button id="startBtn" disabled>Start</button>
   <div id="athletes"></div>
   <a id="downloadLink" download="resultater.csv">Last ned resultater</a>
 
-  <script>
-    let mainTime = 0;
-    let mainTimerInterval;
-    let countdown = 20;
-    let countdownInterval;
-    let currentNumber = 51;
-    const maxNumber = 75; // 🔹 Kun til og med 75
-    let audioCtx = null;
-    let results = [];
+<script>
+  let mainTime = 0;
+  let mainTimerInterval;
+  let countdown = 20;
+  let countdownInterval;
+  let startInterval = 20;
+  let currentIndex = 0;
+  let athletes = []; // {nummer, navn, starttid, resultat}
+  let audioCtx = null;
+  let useCsv = false;
 
-    const mainTimerEl = document.getElementById("mainTimer");
-    const countdownEl = document.getElementById("countdown");
-    const nextUpEl = document.getElementById("nextUp");
-    const athletesEl = document.getElementById("athletes");
-    const startBtn = document.getElementById("startBtn");
-    const downloadLink = document.getElementById("downloadLink");
+  const csvFile = document.getElementById("csvFile");
+  const startFromEl = document.getElementById("startFrom");
+  const endAtEl = document.getElementById("endAt");
+  const intervalEl = document.getElementById("interval");
+  const loadBtn = document.getElementById("loadBtn");
+  const startBtn = document.getElementById("startBtn");
+  const mainTimerEl = document.getElementById("mainTimer");
+  const countdownEl = document.getElementById("countdown");
+  const nextUpEl = document.getElementById("nextUp");
+  const athletesEl = document.getElementById("athletes");
+  const downloadLink = document.getElementById("downloadLink");
 
-    function beep(duration = 150, frequency = 1000, volume = 1, type = "sine") {
-      if (!audioCtx) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.type = type;
-      osc.frequency.value = frequency;
-      gain.gain.value = volume;
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration / 1000);
-    }
+  function beep(duration = 150, frequency = 1000, volume = 1, type = "sine") {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = frequency;
+    gain.gain.value = volume;
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration / 1000);
+  }
 
-    function formatTime(sec) {
-      const m = Math.floor(sec / 60).toString().padStart(2, "0");
-      const s = (sec % 60).toString().padStart(2, "0");
-      return `${m}:${s}`;
-    }
+  function formatTime(sec) {
+    const m = Math.floor(sec / 60).toString().padStart(2, "0");
+    const s = (sec % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  }
 
-    function startMainTimer() {
-      mainTimerInterval = setInterval(() => {
-        mainTime++;
-        mainTimerEl.textContent = formatTime(mainTime);
-      }, 1000);
-    }
+  function startMainTimer() {
+    mainTimerInterval = setInterval(() => {
+      mainTime++;
+      mainTimerEl.textContent = formatTime(mainTime);
+    }, 1000);
+  }
 
-    function stopMainTimer() {
-      clearInterval(mainTimerInterval);
-    }
+  function stopMainTimer() {
+    clearInterval(mainTimerInterval);
+  }
 
-    function playCountdownBeeps(timeLeft) {
-    if (timeLeft === 4 || timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
-        beep(100, 1000, 1, "square"); // kort pip
-    } else if (timeLeft === 0) {
-        beep(700, 1500, 1, "square"); // langt pip
-    }
-    }
+  function playCountdownBeeps(timeLeft) {
+    if ([5, 4, 3, 2].includes(timeLeft)) beep(100, 1000, 1, "square");
+    else if (timeLeft === 1) beep(700, 1500, 1, "square");
+  }
 
-    function addAthleteButton(number) {
-      const btn = document.createElement("button");
-      const numberSpan = document.createElement("span");
-      numberSpan.classList.add("number");
-      numberSpan.textContent = number;
-      const timeSpan = document.createElement("span");
-      timeSpan.textContent = "00:00";
+  function addAthleteButton(athlete) {
+    const btn = document.createElement("button");
+    const numberSpan = document.createElement("span");
+    numberSpan.classList.add("number");
+    numberSpan.textContent = athlete.nummer;
+    const timeSpan = document.createElement("span");
+    timeSpan.textContent = "00:00";
 
-      btn.appendChild(numberSpan);
-      btn.appendChild(timeSpan);
+    btn.appendChild(numberSpan);
+    btn.appendChild(timeSpan);
 
-      const startTime = mainTime;
-      const updateInterval = setInterval(() => {
-        if (!btn.disabled) {
-          const timeNow = mainTime - startTime;
-          timeSpan.textContent = formatTime(timeNow);
-        }
-      }, 500);
+    const startTime = mainTime;
+    const updateInterval = setInterval(() => {
+      if (!btn.disabled) {
+        const timeNow = mainTime - startTime;
+        timeSpan.textContent = formatTime(timeNow);
+      }
+    }, 500);
 
-      btn.addEventListener("click", () => {
-        btn.disabled = true;
-        clearInterval(updateInterval);
-        const endTime = mainTime - startTime;
-        timeSpan.textContent = formatTime(endTime);
-        results.push({ nummer: number, tid: formatTime(endTime) });
+    btn.addEventListener("click", () => {
+      btn.disabled = true;
+      clearInterval(updateInterval);
+      const endTime = mainTime - startTime;
+      timeSpan.textContent = formatTime(endTime);
 
-        if (results.length === (maxNumber - 50)) {
-          stopMainTimer();
-          generateDownloadFile();
-        }
-      });
+      // 🔹 Oppdater direkte i "athletes"-listen:
+      const found = athletes.find(a => a.nummer === athlete.nummer);
+      if (found) found.resultat = formatTime(endTime);
 
-      athletesEl.appendChild(btn);
-    }
+      // 🔹 Sjekk om alle har kommet i mål
+      if (athletes.every(a => a.resultat)) {
+        stopMainTimer();
+        generateDownloadFile();
+      }
+    });
 
-    function generateDownloadFile() {
-      let csvContent = "Nummer;Tid\n";
-      results.forEach(r => {
-        csvContent += `${r.nummer};${r.tid}\n`;
-      });
+    athletesEl.appendChild(btn);
+  }
 
-      const blob = new Blob([csvContent], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      downloadLink.href = url;
-      downloadLink.style.display = "inline-block";
-    }
+function generateDownloadFile() {
+  let csvContent;
+  if (useCsv) {
+    csvContent = "startnummer;navn;starttid;resultat\n";
+    athletes.sort((a, b) => a.nummer - b.nummer).forEach(a => {
+      csvContent += `${a.nummer};${a.navn || ""};${a.starttid || ""};${a.resultat || ""}\n`;
+    });
+  } else {
+    csvContent = "startnummer;tid\n";
+    athletes.sort((a, b) => a.nummer - b.nummer).forEach(a => {
+      csvContent += `${a.nummer};${a.resultat || ""}\n`;
+    });
+  }
 
-    function startCountdown(initial = false) {
-      countdown = 20;
+  // 🔹 Legg til UTF-8 BOM i starten for norsk tegnstøtte i Excel
+  const bom = "\uFEFF";
+  const blob = new Blob([bom + csvContent], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  downloadLink.href = url;
+  downloadLink.style.display = "inline-block";
+}
+
+
+  function startCountdown(initial = false) {
+    countdown = startInterval;
+    countdownEl.textContent = countdown;
+
+    countdownInterval = setInterval(() => {
+      countdown--;
       countdownEl.textContent = countdown;
-    
-      countdownInterval = setInterval(() => {
-        // 1) nedtell
-        countdown--;
-    
-        // 2) vis ny verdi
-        countdownEl.textContent = countdown;
-    
-        // 3) spill pip for verdien som faktisk vises nå
-        playCountdownBeeps(countdown);
-    
-        if (countdown === 0) {
-          clearInterval(countdownInterval);
-    
-          if (initial) {
-            // start hovedtid + første (51) direkte etter første nedtelling
-            startMainTimer();
-            addAthleteButton(currentNumber);
-            nextUpEl.innerHTML = 'Neste ut: <span class="bold">' + (currentNumber + 1) + '</span>';
-            startCountdown(false); // neste intervall
-          } else {
-            currentNumber++;
-            if (currentNumber <= maxNumber) {
-              addAthleteButton(currentNumber);
-              if (currentNumber < maxNumber) {
-                nextUpEl.innerHTML = 'Neste ut: <span class="bold">' + (currentNumber + 1) + '</span>';
-                startCountdown(false);
-              } else {
-                nextUpEl.textContent = "Alle har startet";
-                countdownEl.textContent = "Ferdig!";
-              }
+      playCountdownBeeps(countdown);
+
+      if (countdown === 0) {
+        clearInterval(countdownInterval);
+
+        if (initial) {
+          startMainTimer();
+          addAthleteButton(athletes[currentIndex]);
+          nextUpEl.innerHTML = 'Neste ut: <span class="bold">' + (athletes[currentIndex + 1]?.nummer || "Ingen") + '</span>';
+          startCountdown(false);
+        } else {
+          currentIndex++;
+          if (currentIndex < athletes.length) {
+            addAthleteButton(athletes[currentIndex]);
+            if (currentIndex < athletes.length - 1) {
+              nextUpEl.innerHTML = 'Neste ut: <span class="bold">' + athletes[currentIndex + 1].nummer + '</span>';
+              startCountdown(false);
+            } else {
+              nextUpEl.textContent = "Alle har startet";
+              countdownEl.textContent = "Ferdig!";
             }
           }
         }
-      }, 1000);
-    }
-    startBtn.addEventListener("click", () => {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        audioCtx.resume();
       }
-      startBtn.disabled = true;
-      nextUpEl.innerHTML = 'Neste ut: <span class="bold"> 51 </span>';
-      startCountdown(true); // 🔹 Start første nedtelling før nr. 51
-    });
-  </script>
+    }, 1000);
+  }
+
+  // --- CSV-lesing ---
+function parseCSV(text) {
+  // Finn riktig skilletegn
+  const firstLine = text.split("\n")[0];
+  const delimiter = firstLine.includes(";") ? ";" : ",";
+
+  // Del opp i linjer og hopp over header
+  const lines = text.trim().split("\n").slice(1);
+
+  return lines.map(line => {
+    // Fjern eventuelle anførselstegn og splitt på valgt skilletegn
+    const parts = line.replace(/"/g, "").split(delimiter).map(x => x.trim());
+    const [nummer, navn, starttid, resultat] = parts;
+
+    return {
+      nummer: parseInt(nummer),
+      navn: navn || "",
+      starttid: starttid || "",
+      resultat: ""
+    };
+  });
+}
+
+  loadBtn.addEventListener("click", () => {
+    loadBtn.disabled = true;
+    document.getElementById("setup").style.display = "none";
+    athletes = [];
+    downloadLink.style.display = "none";
+    athletesEl.innerHTML = "";
+    mainTimerEl.textContent = "00:00";
+    countdownEl.textContent = startInterval + " sek";
+    nextUpEl.textContent = "";
+
+    startInterval = parseInt(intervalEl.value);
+
+    if (csvFile.files.length > 0) {
+      const file = csvFile.files[0];
+      const reader = new FileReader();
+      reader.onload = e => {
+        athletes = parseCSV(e.target.result);
+        useCsv = true;
+        alert(`Lastet inn ${athletes.length} løpere fra CSV`);
+        startBtn.disabled = false;
+      };
+      reader.readAsText(file, "UTF-8");
+    } else {
+      const startFrom = parseInt(startFromEl.value);
+      const endAt = parseInt(endAtEl.value);
+      if (isNaN(startFrom) || isNaN(endAt) || endAt < startFrom) {
+        alert("Ugyldig start- og sluttnummer");
+        return;
+      }
+      for (let i = startFrom; i <= endAt; i++) {
+        athletes.push({ nummer: i, resultat: "" });
+      }
+      useCsv = false;
+      alert(`Opprettet ${athletes.length} løpere manuelt`);
+      startBtn.disabled = false;
+      countdownEl.textContent = startInterval + " sek";
+    }
+  });
+
+  startBtn.addEventListener("click", () => {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      audioCtx.resume();
+    }
+    startBtn.disabled = true;
+    currentIndex = 0;
+    nextUpEl.innerHTML = 'Neste ut: <span class="bold">' + athletes[0].nummer + '</span>';
+    startCountdown(true);
+  });
+</script>
+
 </body>
 </html>

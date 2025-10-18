@@ -5,178 +5,185 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tidtaker</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 30px 0 140px 0;
-    background-color: #f4f4f4;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-
-  /* --- SETUP --- */
-  #setup {
-    margin: 0 auto 30px auto;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 25px 30px;
-    border-radius: 12px;
-    box-shadow: 0 0 12px rgba(0,0,0,0.1);
-    max-width: 500px;
-  }
-
-  .formInputs {
-    margin-bottom: 20px;
-    width: 100%;
-  }
-
-  label {
-    font-size: 1.1em;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 6px;
-    color: #333;
-  }
-
-    input[type="file"],
-    input[type="number"] {
-    width: 90%;
-    max-width: 220px; /* 🔹 litt smalere */
-    padding: 9px;
-    font-size: 1em;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    transition: 0.2s;
-    margin: 3px 6px; /* 🔹 litt luft mellom feltene */
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 30px 0 140px 0;
+        background-color: #f4f4f4;
+        -webkit-user-select: none;
+        user-select: none;
     }
 
-  input[type="file"] {
-    background-color: #f9f9f9;
-  }
+    /* --- SETUP --- */
+    #setup {
+        margin: 0 auto 30px auto;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 25px 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 12px rgba(0,0,0,0.1);
+        max-width: 500px;
+    }
 
-  input[type="number"]:focus,
-  input[type="file"]:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 4px rgba(0,123,255,0.4);
-  }
+    .formInputs {
+        margin-bottom: 20px;
+        width: 100%;
+    }
 
-  #loadBtn {
-    border: none;
-    border-radius: 8px;
-    background-color: #007bff;
-    color: white;
-    padding: 12px 25px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    width: 100%;
-    max-width: 250px;
-  }
+    label {
+        font-size: 1.1em;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 6px;
+        color: #333;
+    }
 
-  #loadBtn:hover {
-    background-color: #0056b3;
-  }
+        input[type="file"],
+        input[type="number"] {
+        width: 90%;
+        max-width: 220px; /* 🔹 litt smalere */
+        padding: 9px;
+        font-size: 1em;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        transition: 0.2s;
+        margin: 3px 6px; /* 🔹 litt luft mellom feltene */
+        }
 
-  /* --- TIMER / KNAPPER --- */
-  #mainTimer {
-    font-size: 2em;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
+    input[type="file"] {
+        background-color: #f9f9f9;
+    }
 
-  #countdown {
-    font-size: 3em;
-    margin: 20px 0;
-  }
+    input[type="number"]:focus,
+    input[type="file"]:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 4px rgba(0,123,255,0.4);
+    }
 
-  #nextUp {
-    font-size: 1.3em;
-    font-weight: 500;
-    margin-bottom: 20px;
-  }
+    #loadBtn {
+        border: none;
+        border-radius: 8px;
+        background-color: #007bff;
+        color: white;
+        padding: 12px 25px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: 100%;
+        max-width: 250px;
+    }
 
-  #athletes {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 10px;
-    margin-top: 20px;
-    padding: 0 10px;
-  }
+    #loadBtn:hover {
+        background-color: #0056b3;
+    }
 
-  button {
-    border: none;
-    border-radius: 10px;
-    background-color: #007bff;
-    color: white;
-    padding: 15px 10px;
-    font-size: 1.2em;
-    width: calc(20% - 10px); /* 5 per rad på store skjermer */
-    height: 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s;
-    cursor: pointer;
-    touch-action: manipulation;
-  }
+    /* --- TIMER / KNAPPER --- */
+    #mainTimer {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
 
-  button:hover {
-    background-color: #0056b3;
-  }
+    #countdown {
+        font-size: 3em;
+        margin: 20px 0;
+    }
 
-  button:disabled {
-    background-color: #28a745 !important;
-    cursor: default;
-  }
+    #nextUp {
+        font-size: 1.3em;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
 
-  /* --- STARTKNAPP --- */
-  #startBtn {
-    display: block;
-    margin: 0 auto;
-    width: calc(20% * 5 + 40px); /* Samme bredde som 5 knapper + mellomrom */
-    max-width: 800px;
-    height: 70px;
-    font-size: 1.4em;
-    font-weight: bold;
-    border-radius: 12px;
-    background-color: #ff9800;
-  }
+    #athletes {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 10px;
+        margin-top: 20px;
+        padding: 0 10px;
+    }
 
-  #startBtn:hover {
-    background-color: #e68900;
-  }
+    button {
+        border: none;
+        border-radius: 10px;
+        background-color: #007bff;
+        color: white;
+        padding: 15px 10px;
+        font-size: 1.2em;
+        width: calc(20% - 10px); /* 5 per rad på store skjermer */
+        height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: background-color 0.3s;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
 
-  /* --- LAST NED-LENKE --- */
-  #downloadLink {
-    display: none;
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #28a745;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-  }
+    button:hover {
+        background-color: #0056b3;
+    }
 
-  .bold {
-    font-weight: bolder;
-  }
+    button:disabled {
+        background-color: #28a745 !important;
+        cursor: default;
+    }
+
+    /* --- STARTKNAPP --- */
+    #startBtn {
+        display: block;
+        margin: 0 auto;
+        width: calc(20% * 5 + 40px); /* Samme bredde som 5 knapper + mellomrom */
+        max-width: 800px;
+        height: 70px;
+        font-size: 1.4em;
+        font-weight: bold;
+        border-radius: 12px;
+        background-color: #ff9800;
+    }
+
+    #startBtn:hover {
+        background-color: #e68900;
+    }
+
+    /* --- LAST NED-LENKE --- */
+    #downloadLink {
+        display: none;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+
+    .bold {
+        font-weight: bolder;
+        }
 
     #startFrom {
         margin-bottom: 10px;
     }
 
+    * {
+        box-sizing: border-box; /* 🔹 Hindrer at padding utvider elementer */
+    }
+
+
   /* --- MOBIL --- */
   @media (max-width: 700px) {
+    body {
+        overflow-x: hidden; /* 🔹 Forhindrer sidescroll */
+    }
     #setup {
-      width: 100%;
-      max-width: none;
-      border-radius: 0;
+      width: 95%;
+      max-width: 95%;
       box-shadow: none;
       padding: 20px 15px;
     }
@@ -188,16 +195,21 @@
     }
 
     #startBtn {
-      width: 100%;
+      width: 95%;
       max-width: none;
-      border-radius: 0;
+    }
+    #startFrom, #endAt {
+        display: block;
+        width: 100%;
+        max-width: none;
+        margin: 6px 0;
     }
   }
 </style>
 
 </head>
 <body>
-  <h1>Tidtaker</h1>
+  <h1>TIDTAKER</h1>
 
   <div id="setup">
     <div class="formInputs">
@@ -208,8 +220,8 @@
     <div class="formInputs">
       <label>Manuelt:</label>
     </br>
-      <input type="number" id="startFrom" placeholder="Første nr">
-      <input type="number" id="endAt" placeholder="Siste nr">
+      <input type="number" id="startFrom" placeholder="Første startnummer">
+      <input type="number" id="endAt" placeholder="Siste startnummer">
     </div>
     <div class="formInputs">
       <label>Startintervall (sek):</label>
